@@ -1,0 +1,20 @@
+
+
+/* Add this to your Menu.css */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap');
+
+.arabic-fix {
+  font-family: 'Amiri', serif !important; /* A font that connects perfectly */
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  font-variant-ligatures: required-ligatures !important;
+  font-feature-settings: "rlig" 1, "calt" 1 !important;
+}
+
+
+.parent {
+   /* No need for ../public/ - just start from / */
+  background-image: url("/img/image.jpg");
+  background-size: cover;
+  background-position: center;
+}
