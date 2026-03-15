@@ -46,7 +46,7 @@ console.log("Valeur de searchQuery:", searchQuery);
     <nav className="flex items-center justify-between px-4 md:px-10 lg:px-16 py-4 h-[70px] border-b border-gray-200 bg-white sticky top-0 z-50 bg-gray-300">
       {/* --- LOGO --- */}
       <NavLink to="/" className="z-50">
-        <img src={assets.logo} alt="logo" className="w-28 md:w-32" />
+        {/* <img src={assets.logo} alt="logo" className="w-28 md:w-32" /> */}MUNIDM
       </NavLink>
 
       {/* --- DESKTOP NAVIGATION (Visible > sm) --- */}

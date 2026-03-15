@@ -18,7 +18,7 @@ const Slider = () => {
   ];
 
   return (
-    <div style={{ width: '100%', margin: '40 auto', padding: '10px', position: 'relative', height: '400px'}}>
+    <div style={{ width: '100%', margin: '20 auto', padding: '10px', position: 'relative', height: '400px', border: '1px solid gray'}}>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={15}
@@ -29,7 +29,7 @@ const Slider = () => {
         // --- GESTION DU RESPONSIVE ---
         breakpoints={{
           // MOBILE : 1 image à la fois
-          320: {
+          390: {
             slidesPerView: 1,
           },
           // TABLETTE : 2 images à la fois

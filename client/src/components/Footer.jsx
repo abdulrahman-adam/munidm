@@ -6,7 +6,8 @@ const Footer = () => {
         <div className="px-6 md:px-16 lg:px-24 xl:px-32 mt-24  bg-slate-300">
             <div className="flex flex-col md:flex-row items-start justify-between gap-10 py-10 border-b border-gray-500/30 text-gray-500">
                 <div>
-                    <img className="w-34 md:w-32" src={assets.logo} alt="logo" />
+                    {/* <img className="w-34 md:w-32" src={assets.logo} alt="logo" /> */}
+                    <a href="/">MUNIDM</a>
                     <p className="max-w-[410px] mt-6">Plus besoin de faire la queue. Parcourez nos rayons virtuels, profitez de nos offres exclusives et recevez vos produits frais en moins de 30 minutes. La révolution de vos courses commence ici.</p>
                 </div>
                 <div className="flex flex-wrap justify-between w-full md:w-[45%] gap-5">
@@ -25,7 +26,7 @@ const Footer = () => {
                 </div>
             </div>
             <p className="py-4 text-center text-sm md:text-base text-blue-500/80">
-                Copyright {new Date().getFullYear()} © <a href="https://ayacodia.com">AYACODIA</a> Tous droits réservés.
+                Copyright {new Date().getFullYear()} © <a href="https://munidm.com">MUDIDM</a> Tous droits réservés.
             </p>
         </div>
     );
