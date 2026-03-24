@@ -26,7 +26,7 @@ import { stripeWebhooks } from "./controllers/orderController.js";
 import contactRouter from "./routes/contactRoute.js";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 6000;
 
 await connectDB();
 // --- ADD THIS SECTION HERE ---
