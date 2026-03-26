@@ -51,7 +51,11 @@ portal.azure.com/#home
  docker build -t munidm/client .
 
  # Run the client docker
+<<<<<<< HEAD
  docker run munidm/client || docker run -p 5173:5173 munidm/client
+=======
+ docker run munidm/client ||docker run -p 5173:5173 munidm/client
+>>>>>>> 82e620a3fe5ef6d3675447161881511b2fc84a62
 
 # Build the server Image
 docker build -t munidm/server .
@@ -79,6 +83,7 @@ docker push
 
 docker compose build --no-cache
 
+<<<<<<< HEAD
 docker build -t munidm/server ./server
 docker build -t munidm/client ./client
 
@@ -95,7 +100,45 @@ docker push abdulrahman939291/server
 
 
 docker run -p 3001:3000 munidm/server
+=======
+
+
+# Delete
+docker rmi abdulrahman939291/server
+docker rmi abdulrahman939291/client
+
+# Build Docker images
+docker build -t munidm/server ./server
+docker build -t munidm/client ./client
+
+# Tag for Docker Hub
+docker tag munidm/server abdulrahman939291/server
+docker tag munidm/client abdulrahman939291/client
+
+# Push to Docker Hub
+docker push abdulrahman939291/server
+docker push abdulrahman939291/client
+
+
+docker run -p 6000:6000 abdulrahman939291/server
+
+docker build -t munidm/client ./client
+docker tag munidm/client abdulrahman939291/client
+docker push abdulrahman939291/client
+>>>>>>> 82e620a3fe5ef6d3675447161881511b2fc84a62
 
 
 
 
+<<<<<<< HEAD
+=======
+
+
+docker exec -it munidmdb mysql -uroot -p
+# enter root password: Munidm91f!!!
+
+CREATE USER 'munidm'@'%' IDENTIFIED BY 'Munidm91!!!';
+GRANT ALL PRIVILEGES ON munidm_db.* TO 'munidm'@'%';
+FLUSH PRIVILEGES;
+EXIT;
+>>>>>>> 82e620a3fe5ef6d3675447161881511b2fc84a62
