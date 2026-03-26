@@ -10,7 +10,7 @@ const Categories = () => {
  <div className="mt-16 mx-auto px-4 max-w-[1400px]">
   {/* Header Section centrée sur mobile, à gauche sur desktop */}
   <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-10 w-full mb-16">
-  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-800 text-center leading-tight">
+  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-red-800 text-center leading-tight">
     Découvrez l'ensemble de nos catégories
   </h2>
   <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 whitespace-nowrap">
