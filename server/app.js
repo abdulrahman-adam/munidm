@@ -93,3 +93,16 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+// git add .
+// git commit -m "Final cleanup of server Dockerfile"
+// git push origin main
+
+// # 1. Download the clean code from GitHub
+// git fetch origin main
+
+// # 2. Force the VPS to match your Laptop (Removes all errors)
+// git reset --hard origin/main
+
+// # 3. Rebuild the website with the new clean Dockerfiles
+// docker compose up --build -d
