@@ -108,3 +108,12 @@ app.listen(port, () => {
 
 // # 3. Rebuild the website with the new clean Dockerfiles
 // docker compose up --build -d
+
+
+
+
+// Rebuild the Docker container (since you changed a configuration file):
+// cd /var/www/munidm
+// docker compose down
+// docker compose build --no-cache client
+// docker compose up -d
