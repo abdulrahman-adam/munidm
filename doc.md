@@ -38,7 +38,8 @@ server {
 sudo nginx -t
 sudo systemctl reload nginx
 
-
+# Step 5 Secure it with SSL (HTTPS)
+sudo certbot --nginx -d db.munidm.fr
 
 mohaliabdallahllah7@gmail.com
 MOHALI12345!!!
