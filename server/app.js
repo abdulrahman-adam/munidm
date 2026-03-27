@@ -48,25 +48,52 @@ app.post(
 
 
 // 2. CORS (Must be before all other routes)
-const allowedOrigins = ['http://localhost:5173',
-    "http://zooolna.com",
-    "https://zooolna.com",
-    'http://www.zooolna.com',  // Add this
-    'https://www.zooolna.com'  // Add this
-];
-app.use(cors({ 
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(new Error('CORS Policy Error'), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'token', 'sellerToken']
-}));
+// const allowedOrigins = ['http://localhost:5173',
+//    'https://munidm.fr',
+//   'https://www.munidm.fr',
+//   'http://localhost:5173',
+//   'http://109.176.199.234:5173'
+// ];
 
+// app.use(cors({ 
+//     origin: function (origin, callback) {
+//         if (!origin) return callback(null, true);
+//         if (allowedOrigins.indexOf(origin) === -1) {
+//             return callback(new Error('CORS Policy Error'), false);
+//         }
+//         return callback(null, true);
+//     },
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization', 'token', 'sellerToken']
+// }));
+
+// Add all versions of your domain here
+const allowedOrigins = [
+  'https://munidm.fr',
+  'https://www.munidm.fr',
+  'http://localhost:5173',
+  'http://109.176.199.234:5173'
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("Blocked by CORS:", origin); // This helps you debug in logs
+      callback(new Error('CORS Policy Error'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 // 3. INFRASTRUCTURE (Cookies must be parsed before auth middleware runs)
 app.use(cookieParser());
 app.use(express.json({ limit: '100mb' })); 
