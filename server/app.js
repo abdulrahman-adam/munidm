@@ -98,6 +98,8 @@ app.listen(port, () => {
 // git commit -m "Final cleanup of server Dockerfile"
 // git push origin main
 
+
+// VPS
 // # 1. Download the clean code from GitHub
 // git fetch origin main
 
