@@ -144,3 +144,10 @@ app.listen(port, () => {
 // docker compose down
 // docker compose build --no-cache client
 // docker compose up -d
+
+
+
+
+// CREATE USER 'munidm'@'%' IDENTIFIED BY 'Munidm91!!!';
+// GRANT ALL PRIVILEGES ON munidm_db.* TO 'munidm'@'%';
+// FLUSH PRIVILEGES;
