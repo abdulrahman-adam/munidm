@@ -38,7 +38,7 @@ const BestSeller = () => {
     const { products } = useAppContext()
 
     return (
-        <div className='mt-16 px-4'>
+        <div className='mt-6 px-4'>
             {/* --- SECTION TITRE --- */}
             <div className="flex flex-col items-center text-center my-10">
                 <p className="text-2xl md:text-4xl font-bold text-gray-800 tracking-tight">

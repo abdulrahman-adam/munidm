@@ -13,12 +13,12 @@ const Home = () => {
     <div className='mt-10'>
       <MainBanner />
       {/* <Menu /> */}
-      <hr className="h-px my-8 bg-transparent bg-gradient-to-r from-transparent via-gray-300 to-transparent border-0" />
+      <hr className="h-px my-2 bg-transparent bg-gradient-to-r from-transparent via-gray-300 to-transparent border-0" />
       <Categories />
-      <hr className="h-px my-8 bg-transparent bg-gradient-to-r from-transparent via-gray-300 to-transparent border-0 mt-16" />
+      <hr className="h-px my-2 bg-transparent bg-gradient-to-r from-transparent via-gray-300 to-transparent border-0 mt-2" />
 
       <BestSeller />
-      <BottomBanner />
+      {/* <BottomBanner /> */}
       {/* <NewsLetter /> */}
      
     </div>

@@ -7,9 +7,9 @@ const Categories = () => {
   const { navigate, categories } = useAppContext();
 
   return (
- <div className="mt-16 mx-auto px-4 max-w-[1400px]">
+ <div className="mt-8 mx-auto px-4 max-w-[1400px]">
   {/* Header Section centrée sur mobile, à gauche sur desktop */}
-  <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-10 w-full mb-16">
+  <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-6 w-full">
   <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-800 text-center leading-tight">
     Découvrez l'ensemble de nos catégories
   </h2>
