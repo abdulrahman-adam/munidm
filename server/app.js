@@ -151,3 +151,7 @@ app.listen(port, () => {
 // CREATE USER 'munidm'@'%' IDENTIFIED BY 'Munidm91!!!';
 // GRANT ALL PRIVILEGES ON munidm_db.* TO 'munidm'@'%';
 // FLUSH PRIVILEGES;
+
+
+// Step 1: Read the Error Log
+// docker compose logs nginx
