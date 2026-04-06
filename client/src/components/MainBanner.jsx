@@ -5,7 +5,7 @@ import Slider from "./Slider";
 
 const MainBanner = () => {
   return (
-    <div className="relative mt-32">
+    <div className="relative mt-2">
       {/* <img
         src={assets.main_banner_bg}
         alt="banner"

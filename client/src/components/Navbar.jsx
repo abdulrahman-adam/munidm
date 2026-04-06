@@ -43,10 +43,11 @@ const Navbar = () => {
   console.log("Type de setSearchQuery:", typeof setSearchQuery);
 console.log("Valeur de searchQuery:", searchQuery);
   return (
-    <nav className="flex items-center justify-between px-4 md:px-10 lg:px-16 py-4 h-[70px] border-b border-gray-200 bg-white sticky top-0 z-50 bg-gray-300">
+    <nav className="flex items-center justify-between px-4 md:px-10 lg:px-16 py-4 h-[55px] border-b border-gray-200 bg-gray sticky top-0 z-50 bg-gray-300">
       {/* --- LOGO --- */}
       <NavLink to="/" className="z-50">
-        {/* <img src={assets.logo} alt="logo" className="w-28 md:w-32" /> */}MUNIDM
+        <img src="/munidm1.png" alt="logo" className="w-28 md:w-32" style={{height: '50px'}} />
+        
       </NavLink>
 
       {/* --- DESKTOP NAVIGATION (Visible > sm) --- */}
@@ -188,7 +189,8 @@ console.log("Valeur de searchQuery:", searchQuery);
         <div className="flex flex-col text-gray-600 h-full">
           {/* Header Mobile Menu */}
           <div className="flex items-center justify-between p-5 border-b">
-            <img src={assets.logo} className="w-24" alt="logo" />
+            {/* <img src={assets.logo} className="w-24" alt="logo" /> */}
+            <img src="/munidm1.png" alt="logo" className="w-28 md:w-32" style={{height: '50px'}} />
             <button onClick={() => setOpen(false)} className="text-2xl">
               <i className="bi bi-x-lg"></i>
             </button>
