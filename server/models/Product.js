@@ -1,19 +1,4 @@
-// import mongoose from "mongoose";
 
-
-// const productSchema = new mongoose.Schema({
-//     name: {type: String, required: true},
-//     description: {type: Array, required: true},
-//     price: {type: Number, required: true},
-//     offerPrice: {type: Number, required: true},
-//     image: {type: Array, required: true},
-//     category: {type: String, required: true},
-//     inStock: {type: Boolean, default: true},
-// }, {timestamps: true})
-
-// const Product = mongoose.models.product || mongoose.model('product', productSchema)
-
-// export default Product;
 
 import { DataTypes } from 'sequelize';
 import { sequelize } from "../configs/db.js";
@@ -36,6 +21,13 @@ const Product = sequelize.define('Product', {
     offerPrice: {
         type: DataTypes.FLOAT,
         allowNull: false
+    },
+
+    // --- NEW ATTRIBUTE ADDED BELOW ---
+    variants: {
+        type: DataTypes.JSON,
+        allowNull: true, // Optional, some products might not have sizes/weights
+        comment: "Stores sizes (39, 40) or weights (1kg, 500g) as a JSON array"
     },
    image: {
         type: DataTypes.JSON,

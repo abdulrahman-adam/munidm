@@ -43,17 +43,7 @@ export const addCategory = async (req, res) => {
 
 
 
-// the function get all Products
-// export const categoryList = async (req, res) => {
-//     try {
-//         // Getting the products from the database
-//         const categories = await Category.find({});// find({}) return all the products
-//         return res.json({success: true, categories});
-//     } catch (error) {
-//         console.log(error.message);
-//         return res.json({success: false, message: error.message});
-//     }
-// }
+
 
 // The function to get all Categories
 export const categoryList = async (req, res) => {
@@ -70,36 +60,6 @@ export const categoryList = async (req, res) => {
 }
 
 
-// the function delete Product
-// export const deleteCategory = async (req, res) => {
-//   try {
-//     const { id } = req.body;
-
-//     // 1️⃣ Find category by ID
-//     const category = await Category.findById(id);
-//     if (!category) {
-//       return res.status(404).json({ success: false, message: "Category not found" });
-//     }
-
-//     // 2️⃣ Delete image from Cloudinary
-//     if (category.image && category.image.publicId) {
-//       try {
-//         await cloudinary.uploader.destroy(category.image.publicId);
-//       } catch (err) {
-//         console.warn("Error deleting image from Cloudinary:", err.message);
-//       }
-//     }
-
-//     // 3️⃣ Delete category from database
-//     await Category.findByIdAndDelete(id);
-
-//     // 4️⃣ Send success response
-//     return res.json({ success: true, message: "Category deleted successfully" });
-//   } catch (error) {
-//     console.error("Error deleting category:", error.message);
-//     return res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 
 
 export const deleteCategory = async (req, res) => {

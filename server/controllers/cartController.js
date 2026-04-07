@@ -1,19 +1,4 @@
 
-// import User from "../models/User.js"
-// The function Update User cartData
-
-// export const updateCart = async (req, res) => {
-//     try {
-//         // Getting the user Id and Cart Date from request body
-//         const {userId, cartItems} = req.body;
-//         await User.findByIdAndUpdate(userId, {cartItems});
-//         // Generate the response
-//         res.json({success: true, message: "Your cart has been updated"});
-//     } catch (error) {
-//          console.log(error.message);
-//         return res.json({success: false, message: error.message});
-//     }
-// }
 
 import User from "../models/User.js"
 
