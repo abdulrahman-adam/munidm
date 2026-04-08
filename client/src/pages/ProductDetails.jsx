@@ -196,12 +196,13 @@
 // export default ProductDetails;
 
 
-import { useEffect, useState, useMemo } from "react"; 
+
+import { useEffect, useState, useMemo } from "react";
 import { useAppContext } from "../context/AppContext";
 import { Link, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
 import ProductCard from "../components/ProductCard";
-import toast from "react-hot-toast"; // Ensure toast is imported
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const { products, navigate, currency, addToCart } = useAppContext();
@@ -209,23 +210,21 @@ const ProductDetails = () => {
 
   const [thumbnail, setThumbnail] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
-
-  // --- 1. VARIANTS STATE (Matching ProductCard Logic) ---
   const [selectedVariants, setSelectedVariants] = useState([]);
 
+  // Memoize product search for performance
   const product = useMemo(() => {
     return products.find((item) => String(item.id) === String(id));
   }, [products, id]);
 
-  // --- 2. TOGGLE VARIANT FUNCTION ---
+  // --- LOGIC: TOGGLE VARIANT ---
   const toggleVariant = (v) => {
-    setSelectedVariants(prev => 
-      prev.includes(v) 
-        ? prev.filter(item => item !== v) 
-        : [...prev, v]
+    setSelectedVariants((prev) =>
+      prev.includes(v) ? prev.filter((item) => item !== v) : [...prev, v]
     );
   };
 
+  // --- LOGIC: RELATED PRODUCTS & RESET ---
   useEffect(() => {
     if (product && products.length > 0) {
       const filtered = products.filter(
@@ -233,9 +232,10 @@ const ProductDetails = () => {
       );
       setRelatedProducts(filtered.slice(0, 5));
     }
-    // Reset variants when changing products
+    // Clean state when switching products
     setSelectedVariants([]);
-  }, [products, product]);
+    window.scrollTo(0, 0);
+  }, [id, products, product]);
 
   useEffect(() => {
     if (product?.image?.length > 0) {
@@ -243,19 +243,22 @@ const ProductDetails = () => {
     }
   }, [product]);
 
-  // --- 3. HANDLE ADD TO CART WITH VALIDATION ---
+  // --- LOGIC: ADD TO CART ---
   const handleAddToCart = (isBuyNow = false) => {
     if (product.variants?.length > 0 && selectedVariants.length === 0) {
       return toast.error("Veuillez sélectionner au moins une option");
     }
-    
+
+    // Create the unique variant string for the Cart Key
     const variantString = selectedVariants.sort().join("-");
-    addToCart(product.id, variantString);
     
+    // Call Context function with ID and Variants
+    addToCart(product.id, variantString);
+
     if (isBuyNow) {
       navigate("/cart");
     } else {
-      toast.success("Ajouté au panier !");
+      toast.success("Ajouté au panier ! ✨");
     }
   };
 
@@ -268,133 +271,127 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="mt-12 px-4 md:px-0">
+    <div className="mt-12 px-4 md:px-0 max-w-7xl mx-auto">
       {/* Breadcrumbs */}
-      <p className="text-sm text-gray-600 mb-6">
-        <Link to={"/"} className="hover:text-indigo-500">Home</Link> / 
-        <Link to={"/products"} className="hover:text-indigo-500"> Products</Link> /
-        <Link to={`/products/${product.category.toLowerCase()}`} className="hover:text-indigo-500">
-          {" "}{product.category}
-        </Link> / 
-        <span className="text-indigo-500 font-medium"> {product.name}</span>
-      </p>
+      <nav className="text-sm text-gray-500 mb-8 flex gap-2 items-center">
+        <Link to="/" className="hover:text-indigo-600 transition">Home</Link>
+        <span>/</span>
+        <Link to="/products" className="hover:text-indigo-600 transition">Products</Link>
+        <span>/</span>
+        <span className="text-indigo-600 font-semibold">{product.name}</span>
+      </nav>
 
-      {/* Main Product Section */}
-      <div className="flex flex-col md:flex-row gap-8 lg:gap-16">
+      <div className="flex flex-col md:flex-row gap-12 lg:gap-20">
         
-        {/* Left: Images (Responsive Update) */}
-        <div className="flex-1 flex flex-col-reverse md:flex-row gap-3">
-          {/* Thumbnails list */}
-          <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto shrink-0 scrollbar-hide">
-            {product.image.map((image, index) => (
+        {/* LEFT: IMAGE GALLERY */}
+        <div className="flex-1 flex flex-col-reverse md:flex-row gap-4">
+          <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto shrink-0 scrollbar-hide pb-2">
+            {product.image.map((img, index) => (
               <div
                 key={index}
-                onClick={() => setThumbnail(image)}
-                className={`border w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden cursor-pointer shrink-0 transition-all ${
-                  thumbnail === image ? "border-indigo-500 ring-2 ring-indigo-100" : "border-gray-200"
+                onClick={() => setThumbnail(img)}
+                className={`border-2 w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
+                  thumbnail === img ? "border-indigo-600 scale-95" : "border-transparent bg-gray-50"
                 }`}
               >
-                <img src={image} alt="" className="w-full h-full object-cover" />
+                <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
-          {/* Main Image */}
-          <div className="flex-1 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
+          <div className="flex-1 bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm group">
             <img
               src={thumbnail}
               alt={product.name}
-              className="w-full h-auto object-cover hover:scale-105 transition duration-500"
+              className="w-full h-full object-center object-cover group-hover:scale-110 transition duration-700"
             />
           </div>
         </div>
 
-        {/* Right: Product Details */}
-        <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 leading-tight">
+        {/* RIGHT: PRODUCT INFO */}
+        <div className="flex-1 py-2">
+          <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+            {product.category}
+          </span>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-4 leading-tight">
             {product.name}
           </h1>
           
-          <div className="flex items-center gap-1 mt-3">
-            {[...Array(5)].map((_, i) => (
-              <img
-                key={i}
-                src={i < 4 ? assets.star_icon : assets.star_dull_icon}
-                alt="star"
-                className="w-4 h-4"
-              />
-            ))}
-            <p className="text-sm ml-2 text-gray-400 font-medium">(120 Reviews)</p>
+          <div className="flex items-center gap-3 mt-4">
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                <img key={i} src={i < 4 ? assets.star_icon : assets.star_dull_icon} className="w-4 h-4" alt="star" />
+              ))}
+            </div>
+            <p className="text-sm text-gray-400 font-medium">(120 Reviews)</p>
           </div>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-xl inline-block w-full md:w-auto">
-            <p className="text-gray-400 line-through text-sm">
-              {currency} {product.price}
-            </p>
-            <div className="flex items-baseline gap-2">
+          <div className="mt-8 flex items-center gap-4">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
               <p className="text-3xl font-black text-indigo-600">
-                {currency} {product.offerPrice}
+                {currency}{product.offerPrice}
               </p>
-              <span className="text-xs font-bold text-green-600">
-                {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
-              </span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-gray-400 line-through text-sm">{currency}{product.price}</span>
+                <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                  -{Math.round(((product.price - product.offerPrice) / product.price) * 100)}%
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* --- VARIANTS SECTION --- */}
-          <div className="mt-8">
-            <div className="flex justify-between items-center mb-3">
-              <p className="text-sm font-bold text-gray-700 uppercase tracking-wider">
-                Sélectionnez vos options
-              </p>
-              {product.variants?.length > 0 && (
-                <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">
-                  {selectedVariants.length} Sélectionné(s)
-                </span>
+          {/* VARIANTS SECTION */}
+          <div className="mt-10">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest">Options</h3>
+              {selectedVariants.length > 0 && (
+                <button onClick={() => setSelectedVariants([])} className="text-xs text-indigo-500 hover:underline">Effacer</button>
               )}
             </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {product.variants && product.variants.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {product.variants?.length > 0 ? (
                 product.variants.map((v, i) => (
                   <button
                     key={i}
                     onClick={() => toggleVariant(v)}
-                    className={`px-5 py-2.5 text-xs font-bold border-2 rounded-xl transition-all duration-200 
-                    ${selectedVariants.includes(v) 
-                      ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100 scale-105" 
-                      : "bg-white border-gray-100 text-gray-500 hover:border-indigo-200"}`}
+                    className={`px-6 py-3 text-xs font-bold rounded-xl border-2 transition-all duration-300 ${
+                      selectedVariants.includes(v)
+                        ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100 -translate-y-1"
+                        : "bg-white border-gray-100 text-gray-500 hover:border-indigo-200"
+                    }`}
                   >
                     {v}
                   </button>
                 ))
               ) : (
-                <p className="text-sm text-gray-400 italic">Standard / Taille Unique</p>
+                <p className="text-sm text-gray-400 italic">Modèle Standard</p>
               )}
             </div>
           </div>
 
-          <div className="mt-10">
-            <p className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Description</p>
-            <ul className="space-y-2">
+          {/* DESCRIPTION */}
+          <div className="mt-10 border-t border-gray-100 pt-8">
+            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4">Description</h3>
+            <ul className="grid grid-cols-1 gap-3">
               {product.description.map((desc, index) => (
-                <li key={index} className="flex items-start gap-2 text-gray-600 text-sm">
-                   <span className="text-indigo-500 mt-1">•</span> {desc}
+                <li key={index} className="flex items-start gap-3 text-gray-600 text-sm leading-relaxed">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+                  {desc}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center mt-10 gap-4">
+          {/* ACTION BUTTONS */}
+          <div className="flex flex-col sm:flex-row items-center mt-12 gap-4">
             <button
               onClick={() => handleAddToCart(false)}
-              className="w-full sm:flex-1 py-4 font-bold bg-gray-900 text-white rounded-2xl hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
+              className="group w-full sm:flex-1 py-4 font-bold bg-gray-900 text-white rounded-2xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
             >
               Add to Cart
             </button>
             <button
               onClick={() => handleAddToCart(true)}
-              className="w-full sm:flex-1 py-4 font-bold bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-200"
+              className="w-full sm:flex-1 py-4 font-bold bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-all active:scale-95 shadow-xl shadow-indigo-100"
             >
               Buy Now
             </button>
@@ -402,36 +399,16 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Related Products Section */}
-      <div className="mt-24 border-t pt-16">
-        <div className="flex flex-col items-center mb-10 text-center">
-          <h2 className="text-2xl md:text-3xl font-black text-gray-800 tracking-tight">
-            Produits Similaires
-          </h2>
-          <p className="text-sm text-gray-500 mt-2 max-w-md">
-            Découvrez d'autres articles qui pourraient vous intéresser.
-          </p>
-          <div className="h-1.5 w-12 bg-indigo-500 rounded-full mt-4"></div>
+      {/* RELATED PRODUCTS */}
+      <div className="mt-32 border-t border-gray-100 pt-16 pb-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Vous pourriez aimer</h2>
+          <div className="h-1 w-12 bg-indigo-600 mx-auto mt-4 rounded-full" />
         </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-          {relatedProducts
-            .filter((p) => p.inStock)
-            .map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-        </div>
-
-        <div className="flex justify-center mt-12">
-          <button
-            onClick={() => {
-              navigate("/products");
-              window.scrollTo(0, 0);
-            }}
-            className="px-12 py-3 border-2 border-indigo-600 text-indigo-600 font-bold rounded-full hover:bg-indigo-600 hover:text-white transition-all duration-300"
-          >
-            See More
-          </button>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {relatedProducts.filter(p => p.inStock).map(p => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
       </div>
     </div>

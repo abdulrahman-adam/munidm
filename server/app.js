@@ -43,6 +43,7 @@ const allowedOrigins = [
   'https://munidm.fr',
   'https://www.munidm.fr',
   'http://localhost:5173',
+  'http://localhost:5174',
   'http://109.176.199.234:5173'
 ];
 

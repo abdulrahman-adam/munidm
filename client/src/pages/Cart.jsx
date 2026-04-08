@@ -355,6 +355,8 @@
 
 // export default Cart;
 
+
+
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
@@ -380,26 +382,35 @@ const Cart = () => {
   const [showAddress, setShowAddress] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentOption, setPaymentOption] = useState("COD");
-
-  // État pour gérer le délai de chargement des données
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Fonction pour transformer l'objet cartItems en tableau exploitable
+  // --- 1. PROFESSIONAL VARIANT PARSING ---
   const getCart = () => {
     let tempArray = [];
     for (const key in cartItems) {
-      const product = products.find((item) => String(item.id) === String(key));
+      if (cartItems[key] > 0) {
+        // key format is "productId-variant1-variant2"
+        const parts = String(key).split("-");
+        const productId = parts[0];
+        const variantsFromKey = parts.slice(1); // Everything after the ID
 
-      if (product && cartItems[key] > 0) {
-        const productWithQty = { ...product };
-        productWithQty.quantity = cartItems[key];
-        tempArray.push(productWithQty);
+        const product = products.find((item) => String(item.id) === String(productId));
+
+        if (product) {
+          tempArray.push({
+            ...product,
+            cartKey: key, // Keep the full key for updates/removal
+            quantity: cartItems[key],
+            currentVariants: variantsFromKey, // Store variants for display
+          });
+        }
       }
     }
     setCartArray(tempArray);
     setIsLoaded(true);
   };
 
+  // --- 2. ORDER PLACEMENT WITH VARIANTS ---
   const placeOrder = async () => {
     try {
       if (!selectedAddress) {
@@ -412,6 +423,8 @@ const Cart = () => {
         items: cartArray.map((item) => ({
           product: item.id,
           quantity: item.quantity,
+          // Send variants as a readable string to the backend
+          variant: item.currentVariants.join("-") || "Standard",
         })),
       };
 
@@ -462,7 +475,6 @@ const Cart = () => {
     }
   }, [user]);
 
-  // --- VUE : CHARGEMENT ---
   if (!isLoaded && products.length === 0) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -471,23 +483,15 @@ const Cart = () => {
     );
   }
 
-  // --- VUE : PANIER VIDE ---
   if (isLoaded && cartArray.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
         <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-          <img
-            src={assets.logo}
-            alt="Vide"
-            className="w-12 opacity-20 grayscale"
-          />
+          <img src={assets.logo} alt="Vide" className="w-12 opacity-20 grayscale" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-800">
-          Votre panier est vide
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-800">Votre panier est vide</h2>
         <p className="text-gray-500 mt-2 mb-8 max-w-sm">
-          On dirait que vous n'avez pas encore fait votre choix. Découvrez nos
-          nouveautés !
+          On dirait que vous n'avez pas encore fait votre choix. Découvrez nos nouveautés !
         </p>
         <button
           onClick={() => navigate("/products")}
@@ -499,7 +503,6 @@ const Cart = () => {
     );
   }
 
-  // --- VUE : PANIER PLEIN ---
   return (
     <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto gap-10">
       <div className="flex-1">
@@ -517,46 +520,42 @@ const Cart = () => {
         </div>
 
         {cartArray.map((product, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-[2fr_1fr_1fr] items-center py-6 border-b border-gray-50"
-          >
+          <div key={index} className="grid grid-cols-[2fr_1fr_1fr] items-center py-6 border-b border-gray-50">
             <div className="flex items-center gap-4">
               <div
                 onClick={() => {
-                  navigate(
-                    `/products/${product.category.toLowerCase()}/${product.id}`,
-                  );
+                  navigate(`/products/${product.category.toLowerCase()}/${product.id}`);
                   window.scrollTo(0, 0);
                 }}
                 className="cursor-pointer w-20 h-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0"
               >
-                <img
-                  className="w-full h-full object-contain"
-                  src={product.image[0]}
-                  alt={product.name}
-                />
+                <img className="w-full h-full object-contain" src={product.image[0]} alt={product.name} />
               </div>
               <div>
-                <p className="font-bold text-gray-800 text-sm md:text-base mb-1">
-                  {product.name}
-                </p>
-                <p className="text-xs text-gray-400 mb-2">
-                  Poids: {product.weight || "N/A"}
-                </p>
+                <p className="font-bold text-gray-800 text-sm md:text-base mb-1">{product.name}</p>
+                
+                {/* --- PROFESSIONAL VARIANT DISPLAY --- */}
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {product.currentVariants.length > 0 ? (
+                    product.currentVariants.map((v, i) => (
+                      <span key={i} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold uppercase">
+                        {v}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-xs text-gray-400">Standard</p>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-gray-500">Qté:</span>
                   <select
-                    onChange={(e) =>
-                      updateCartItems(product.id, Number(e.target.value))
-                    }
-                    value={cartItems[product.id]}
+                    onChange={(e) => updateCartItems(product.cartKey, Number(e.target.value))}
+                    value={product.quantity}
                     className="bg-white border border-gray-200 rounded text-xs p-1 outline-none"
                   >
                     {[...Array(10)].map((_, i) => (
-                      <option key={i} value={i + 1}>
-                        {i + 1}
-                      </option>
+                      <option key={i} value={i + 1}>{i + 1}</option>
                     ))}
                   </select>
                 </div>
@@ -568,14 +567,10 @@ const Cart = () => {
             </p>
 
             <button
-              onClick={() => removeFromCart(product.id)}
+              onClick={() => removeFromCart(product.cartKey)}
               className="mx-auto p-2 hover:bg-red-50 rounded-full transition group"
             >
-              <img
-                src={assets.remove_icon}
-                alt="Supprimer"
-                className="w-5 h-5 opacity-50 group-hover:opacity-100"
-              />
+              <img src={assets.remove_icon} alt="Supprimer" className="w-5 h-5 opacity-50 group-hover:opacity-100" />
             </button>
           </div>
         ))}
@@ -588,11 +583,9 @@ const Cart = () => {
         </button>
       </div>
 
-      {/* --- RÉSUMÉ DE COMMANDE --- */}
+      {/* --- RÉSUMÉ DE COMMANDE (Keeping your layout, just refining data) --- */}
       <div className="max-w-[380px] w-full bg-white p-8 border border-gray-100 shadow-sm rounded-2xl h-fit sticky top-24">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">
-          Résumé de la commande
-        </h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Résumé de la commande</h2>
 
         <div className="space-y-6">
           <div>
@@ -602,8 +595,8 @@ const Cart = () => {
             <div className="relative bg-gray-50 p-4 rounded-xl border border-gray-100">
               <p className="text-xs text-gray-600 leading-relaxed pr-8">
                 {selectedAddress
-                  ? `${selectedAddress.street} ${selectedAddress.zipcode} ${selectedAddress.city} ${selectedAddress.country}`
-                  : "Aucune adresse enregistrée"}
+                  ? `${selectedAddress.street}, ${selectedAddress.city} ${selectedAddress.zipcode}`
+                  : "Aucune adresse sélectionnée"}
               </p>
               <button
                 onClick={() => setShowAddress(!showAddress)}
@@ -617,31 +610,14 @@ const Cart = () => {
                   {addresses.map((addr, i) => (
                     <div
                       key={i}
-                      onClick={() => {
-                        setSelectedAddress(addr);
-                        setShowAddress(false);
-                      }}
+                      onClick={() => { setSelectedAddress(addr); setShowAddress(false); }}
                       className="p-3 text-xs hover:bg-indigo-50 cursor-pointer border-b border-gray-50"
                     >
-                      {addr.street} {addr.zipcode} {addr.city} {addr.country}
+                      {addr.street}, {addr.city}
                     </div>
                   ))}
-                  {/* <div onClick={() => navigate("/add-address")} className="p-3 text-xs text-indigo-600 font-bold text-center hover:bg-indigo-50 cursor-pointer">
-                    + Ajouter une adresse
-                  </div> */}
                   <div
-                    onClick={() => {
-                      if (user) {
-                        // Si connecté, on va à la page d'ajout
-                        navigate("/add-address");
-                      } else {
-                        // Sinon, message d'erreur et ouverture du login
-                        toast.error(
-                          "Veuillez vous connecter pour ajouter une adresse",
-                        );
-                        setShowUserLogin(true);
-                      }
-                    }}
+                    onClick={() => user ? navigate("/add-address") : setShowUserLogin(true)}
                     className="p-3 text-xs text-indigo-600 font-bold text-center hover:bg-indigo-50 cursor-pointer"
                   >
                     + Ajouter une adresse
@@ -667,25 +643,15 @@ const Cart = () => {
           <div className="pt-4 border-t border-gray-100 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Sous-total</span>
-              <span className="font-bold text-gray-800">
-                {getCartAmount().toFixed(2)} {currency}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Livraison</span>
-              <span className="text-green-600 font-bold">Gratuite</span>
+              <span className="font-bold text-gray-800">{getCartAmount().toFixed(2)} {currency}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">TVA (20%)</span>
-              <span className="font-bold text-gray-800">
-                {(getCartAmount() * 0.2).toFixed(2)} {currency}
-              </span>
+              <span className="font-bold text-gray-800">{(getCartAmount() * 0.2).toFixed(2)} {currency}</span>
             </div>
             <div className="flex justify-between text-xl font-black text-gray-900 pt-3 border-t border-gray-100">
               <span>Total</span>
-              <span>
-                {(getCartAmount() * 1.2).toFixed(2)} {currency}
-              </span>
+              <span>{(getCartAmount() * 1.2).toFixed(2)} {currency}</span>
             </div>
           </div>
 
@@ -693,9 +659,7 @@ const Cart = () => {
             onClick={placeOrder}
             className="w-full py-4 bg-indigo-600 text-white font-black rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-[0.98]"
           >
-            {paymentOption === "COD"
-              ? "CONFIRMER LA COMMANDE"
-              : "PROCÉDER AU PAIEMENT"}
+            {paymentOption === "COD" ? "CONFIRMER LA COMMANDE" : "PROCÉDER AU PAIEMENT"}
           </button>
         </div>
       </div>

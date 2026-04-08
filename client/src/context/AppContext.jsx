@@ -147,13 +147,29 @@ export const AppContextProvider = ({ children }) => {
 
     // --- 4. CART LOGIC ---
 
-    const addToCart = (itemId) => {
-        if (!itemId) return;
-        let cartData = structuredClone(cartItems || {});
-        cartData[itemId] = (cartData[itemId] || 0) + 1;
-        setCartItems(cartData);
-        toast.success("Added to cart ✨");
-    };
+    // const addToCart = (itemId) => {
+    //     if (!itemId) return;
+    //     let cartData = structuredClone(cartItems || {});
+    //     cartData[itemId] = (cartData[itemId] || 0) + 1;
+    //     setCartItems(cartData);
+    //     toast.success("Added to cart ✨");
+    // };
+
+    const addToCart = (itemId, variant = "") => {
+    if (!itemId) return;
+
+    // 1. Create a unique key (e.g., "product123-Red-XL")
+    // If no variant, it just stays as the ID
+    const cartKey = variant ? `${itemId}-${variant}` : `${itemId}`;
+
+    let cartData = structuredClone(cartItems || {});
+
+    // 2. Use the cartKey instead of itemId
+    cartData[cartKey] = (cartData[cartKey] || 0) + 1;
+
+    setCartItems(cartData);
+    toast.success("Added to cart ✨");
+};
 
     const removeFromCart = (itemId) => {
         let cartData = structuredClone(cartItems);
@@ -176,18 +192,42 @@ export const AppContextProvider = ({ children }) => {
 
     const getCartCount = () => Object.values(cartItems).reduce((a, b) => a + b, 0);
 
-    const getCartAmount = () => {
-        let totalAmount = 0;
-        for (const id in cartItems) {
-            let itemInfo = products.find((p) => String(p.id) === String(id));
-            if (itemInfo) totalAmount += itemInfo.offerPrice * cartItems[id];
-        }
-        return Math.floor(totalAmount * 100) / 100;
-    };
+    // const getCartAmount = () => {
+    //     let totalAmount = 0;
+    //     for (const id in cartItems) {
+    //         let itemInfo = products.find((p) => String(p.id) === String(id));
+    //         if (itemInfo) totalAmount += itemInfo.offerPrice * cartItems[id];
+    //     }
+    //     return Math.floor(totalAmount * 100) / 100;
+    // };
 
     // --- 5. EFFECTS ---
 
     // Initial Load
+    
+    
+    const getCartAmount = () => {
+    let totalAmount = 0;
+    
+    for (const key in cartItems) {
+        if (cartItems[key] > 0) {
+            // 1. Get ONLY the ID part (before the first dash)
+            const productId = String(key).split("-")[0];
+
+            // 2. Find the product using that cleaned ID
+            const itemInfo = products.find((p) => String(p.id) === productId);
+
+            if (itemInfo) {
+                totalAmount += itemInfo.offerPrice * cartItems[key];
+            }
+        }
+    }
+    
+    // Using toFixed(2) is cleaner for currency than Math.floor/100
+    return parseFloat(totalAmount.toFixed(2));
+};
+
+
     useEffect(() => {
         const init = async () => {
             await fetchUser();

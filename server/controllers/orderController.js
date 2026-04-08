@@ -679,35 +679,60 @@ export const getAllOrders = async (req, res) => {
 //   }
 // };
 
+// --- 4. Place Order COD (Calculated & Variant Aware) ---
 export const placeOrderCOD = async (req, res) => {
   try {
     const { userId, items, address } = req.body;
 
-    // ... (Validation and Amount calculation remains same)
+    // 1. Validation
+    if (!address || !items || items.length === 0) {
+      return res.json({ success: false, message: "Données invalides" });
+    }
 
+    // 2. CALCULATE AMOUNT (This fixes the 'amount is not defined' error)
+    let amount = 0;
+    const TAX_RATE = 0.2; // 20%
+
+    for (const item of items) {
+      const product = await Product.findByPk(item.product);
+      if (product) {
+        // Use offerPrice (or price if you don't have offerPrice)
+        amount += (product.offerPrice || product.price) * item.quantity;
+      }
+    }
+
+    // Add Tax
+    const totalWithTax = amount + (amount * TAX_RATE);
+
+    // 3. Build Order Object
     const orderData = {
       userId,
-      // Mapping ensures we explicitly keep the variant field
+      // Map ensures the data is clean and variants are saved
       items: items.map(item => ({
         product: item.product,
         quantity: item.quantity,
-        variant: item.variant || "Standard" // This is the crucial line
+        variant: item.variant || "Standard"
       })),
-      amount,
+      amount: totalWithTax, 
       address,
       paymentType: "COD",
       isPaid: false,
       status: "Order Placed",
-      date: Date.now(),
+      date: new Date(), // Professional date format
     };
 
+    // 4. Create Order & Empty Cart
     await Order.create(orderData);
-    return res.json({ success: true, message: "Order Placed Successfully" });
+    
+    // Optional: Clear user cart after COD order
+    await User.update({ cartItems: "{}" }, { where: { id: userId } });
+
+    return res.json({ success: true, message: "Commande passée avec succès !" });
   } catch (error) {
+    console.error("COD Error:", error);
     return res.json({ success: false, message: error.message });
   }
 };
-
 // --- 5. Place Order Stripe (Professional Variant Display) ---
 export const placeOrderStripe = async (req, res) => {
   try {
